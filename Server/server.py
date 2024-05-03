@@ -6,15 +6,20 @@ from commands import login, signup
 import sqlite3
 import os
 
+# Defines the address and port to run the server on
 HOST = 'localhost'
 PORT = 50000
+
+# Constants for reading and sending messages
 COMMAND_SIZE = 2
 HEADER_SIZE = 10
+
+# Path to the server CA certification and private key
 KEYPATH = './rootCA.key'
 CERTPATH = './rootCA.pem'
 DBPATH = "./SecureAuth.db"
 
-# User object | used to verifiy the clients logged in status
+# User object / used to verifiy the clients logged in status
 class User():
     def __init__(self, addr):
         self.addr = addr
@@ -35,10 +40,13 @@ def createDB():
     '''
     curs.execute(createUserTableQuery)
 
-
+# This is the thread that is spun up for each client that connects to the server
+# is responsable for handling the users messages and sending a response
 def handleClient(conn, addr):
-    # Create new visitor object for each client
+    # Create new user object for each client
     visitor = User(addr)
+
+    # Send a welcome message to the client
     welcomeMessage = "Welcome to the Server.\nThis connection is now secure!\n"
     conn.send(bytes(f'{len(welcomeMessage):<{HEADER_SIZE}}' + welcomeMessage ,'utf-8'))
 

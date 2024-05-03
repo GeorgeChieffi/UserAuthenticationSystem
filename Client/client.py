@@ -1,13 +1,22 @@
 import ssl
 import socket
 
+# Path to Servers Certificate
 SERVERCERTPATH = "../Server/rootCA.pem"
+
+# Adddress and port of the Server
 HOST = 'localhost'
 PORT = 50000
+
+# Max lengths for each part of the header
 COMMAND_SIZE = 2
 HEADER_SIZE = 10
+
+# Default menu
 menu = "Please select an option below:\n1 - login\n2 - signup\n"
 
+
+# Checks if the users password is compliant with the rules
 def checkPassword(str) -> bool:
     length = 0
     upperCase = 0
@@ -28,7 +37,7 @@ def checkPassword(str) -> bool:
         return True
     return False
 
-
+# Handles gathering users input for signup message
 def sendSignup():
     username = input("Username: ")
     while True:
@@ -42,26 +51,42 @@ def sendSignup():
         else:
             print("Please follow the password rules!")
 
+    # Create the data for the message
     data = username + '&' + password1
+
+    # Formats the command header to be of len 2
     commandHeader = f'{int(2):<{COMMAND_SIZE}}'
+
+    # Formats the command header to be of len 10
     lengthHeader = f'{len(data):<{HEADER_SIZE}}'
 
+    # Encode the message in UTF-8
     message = bytes(commandHeader + lengthHeader + data ,'utf-8')
 
+    # Send message to the server
     return(message)
 
+# Handles gathering users input for the login message
 def sendLogin():
     username = input("Username: ")
     password = input("Password: ") # could use pwinput to hide users input and mask as *
 
+    # builds data part of message
     data = username + "&" + password
+    
+    # Formats the command header to be of len 2
     commandHeader = f'{int(1):<{COMMAND_SIZE}}'
+
+    # Formats the command header to be of len 10
     lengthHeader = f'{len(data):<{HEADER_SIZE}}'
 
+    # Encodes the entire message in UTF-8
     message = bytes(commandHeader + lengthHeader + data ,'utf-8')
 
+    # Sends message to the server
     return(message)
 
+# Handles gathering the flag from the user
 def handleFlag():
     data = input("Enter the flag: ")
     commandHeader = f'{int(9):<{COMMAND_SIZE}}'
